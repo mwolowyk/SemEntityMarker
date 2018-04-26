@@ -1,0 +1,17 @@
+### DBPedia annotate request
+
+GET http://{{host}}?text={{text}}&confidence={{confidence}}
+Accept: application/json
+
+### Unsilo get by DOI
+
+GET https://api.unsilo.com/springer/related-content/2.7/document/v4/by-id/{{doi}}
+
+### SciGraph get by DOI
+
+GET https://scigraph.springernature.com/api/redirect?doi={{doi}}
+Accept: application/ld+json
+
+### Dimensions DSL
+POST https://<your-url.dimensions.ai>/api/auth.json
+

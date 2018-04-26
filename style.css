@@ -1,0 +1,46 @@
+.sementity{
+    color: orange !important;
+    text-decoration: underline !important;
+    font-weight: bolder !important;
+    position: relative;
+}
+
+.tooltip .tooltiptext {
+    background-image: url('http://ahmadassaf.com/images/posts/rdf.png');
+    background-repeat: no-repeat;
+    background-position: left;
+    background-size: contain;
+    padding-left: 30px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-right: 10px;
+    visibility: hidden;
+    font-size: 14px;
+    width: auto;
+    background-color: #a0a0a0;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 0;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #a0a0a0 transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}

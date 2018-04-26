@@ -1,0 +1,30 @@
+{
+  "manifest_version": 2,
+
+  "name": "Semantic Entity Matcher",
+  "description": "This extension allows the user mark Semantic Entities on the current page.",
+  "version": "1.0",
+
+  "browser_action": {
+    "default_icon": "semantic.png",
+    "default_popup": "popup.html",
+    "default_title": "Click here!"
+  },
+  "content_scripts":[
+    {"matches" : [
+      "<all_urls>"
+    ],
+      "js" : ["vendor/jquery-3.3.1.min.js", "content.js"],
+      "css" : ["style.css"]
+    }
+  ],
+  "background" :{
+    "scripts" : ["background.js"],
+    "persistent" : true
+  },
+  "permissions": [
+    "activeTab",
+    "storage",
+    "background"
+  ]
+}
