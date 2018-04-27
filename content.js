@@ -31,6 +31,11 @@ function getEntities(text){
    return makeAjaxCall(url, 'GET', data);
 };
 
+function getAbstractForEntity(entity){
+    const url = `http://dbpedia.org/sparql/?default-graph-uri=http%3A%2F%2Fdbpedia.org&query=prefix+dbpedia%3A+%3Chttp%3A%2F%2Fdbpedia.org%2Fresource%2F%3E%0D%0Aprefix+dbpedia-owl%3A+%3Chttp%3A%2F%2Fdbpedia.org%2Fontology%2F%3E%0D%0Aselect+%3Fabstract+where+%7B+++%0D%0Adbpedia%3A${entity}+dbpedia-owl%3Aabstract+%3Fabstract+.%0D%0Afilter%28langMatches%28lang%28%3Fabstract%29%2C%22en%22%29%29%7D&format=application%2Fsparql-results%2Bjson&CXML_redir_for_subjs=121&CXML_redir_for_hrefs=&timeout=30000&debug=on&run=+Run+Query+`;
+    return makeAjaxCall(url, 'GET');
+}
+
 
 function getEntitiesForSciGraph(doi){
     const url = 'https://scigraph.springernature.com/api/redirect';
@@ -69,9 +74,9 @@ function replaceTextWithSementities(respJson, innerHtml) {
     console.log('Response: ', respJson.Resources);
     resourses.forEach(function (r) {
         const resourceText = r['@surfaceForm'];
-        const resourceUri = r['@URI'];
+        let resourceUri = r['@URI'];
         if (processedResources.indexOf(resourceText) < 0) {
-
+            // const wikiUri = resourceUri.replace('http://dbpedia.org/resource/', 'https://en.wikipedia.org/wiki/');
             innerHtml = innerHtml.replace(" " + resourceText + " ", '<a class="sementity tooltip" href="' + resourceUri + '"> ' + resourceText + ' </a>');
             processedResources.push(resourceText);
         }
@@ -83,10 +88,15 @@ function replaceTextWithSementities(respJson, innerHtml) {
 function createToolTips(){
     var $sementity = $('.sementity');
     $sementity.each(function(e, v){
-        var txt3 = document.createElement("span");
-        txt3.className = 'tooltiptext';
-        txt3.innerText = v.href.replace('https://dbpedia.org/resource/', ':');
-        v.append(txt3);
+        let entity = v.href.replace('http://dbpedia.org/resource/', '');
+        getAbstractForEntity(entity).then(function(resp){
+            var txt3 = document.createElement("span");
+            txt3.className = 'tooltiptext';
+            let abstract = resp.results.bindings[0].abstract.value;
+            console.log('abstract: ', abstract);
+            txt3.innerText = abstract;
+            v.append(txt3);
+        });
     });
 };
 
