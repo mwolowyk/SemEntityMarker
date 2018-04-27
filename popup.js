@@ -5,4 +5,12 @@ window.onload = function() {
             type: "color-divs"
         });
     }
+
+    document.getElementById("button2").onclick = function() {
+        console.log('Clicked SciGraph');
+        chrome.extension.sendMessage({
+            type: "scigraph"
+        });
+    }
+
 }

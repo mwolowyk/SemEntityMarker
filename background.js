@@ -34,6 +34,9 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
         case "color-divs":
             colorDivs();
             break;
+        case "scigraph":
+            sciGraph();
+            break;
     }
     return true;
 });
@@ -55,6 +58,15 @@ chrome.extension.onConnect.addListener(function (port) {
 var colorDivs = function() {
     chrome.tabs.getSelected(null, function(tab){
         chrome.tabs.sendMessage(tab.id, {type: "colors-div", color: "#f9ffbf"});
+        // setting a badge
+        chrome.browserAction.setBadgeText({text: "marked!"});
+    });
+}
+
+// send a message to the content script
+var sciGraph = function() {
+    chrome.tabs.getSelected(null, function(tab){
+        chrome.tabs.sendMessage(tab.id, {type: "scigraph", color: "#f9ffbf"});
         // setting a badge
         chrome.browserAction.setBadgeText({text: "marked!"});
     });

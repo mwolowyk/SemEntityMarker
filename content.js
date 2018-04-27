@@ -30,6 +30,16 @@ function getEntities(text){
    return makeAjaxCall(url, 'GET', data);
 };
 
+
+function getEntitiesForSciGraph(doi){
+    const url = 'https://scigraph.springernature.com/api/redirect';
+    const data = {
+        doi : doi
+    };
+
+    return makeAjaxCall(url, 'GET', data);
+};
+
 function replaceTextWithSementities(respJson, innerHtml) {
     const resourses = respJson.Resources;
     const processedResources = [];
@@ -80,6 +90,13 @@ chrome.extension.onMessage.addListener(function(message, sender, sendResponse) {
                     });
                 }
             });
+            break;
+
+        case "scigraph":
+            var splittedPath = location.pathname.split("/");
+            var doi = splittedPath[splittedPath.length-1];
+            print(doi);
+            // getEntitiesForSciGraph(doi).then()
             break;
     }
 });
