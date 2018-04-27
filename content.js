@@ -70,39 +70,28 @@ function createToolTips(){
 chrome.extension.onMessage.addListener(function(message, sender, sendResponse) {
     switch(message.type) {
         case "colors-div":
-            var selector = $('.Para');
-            var innerHtml = selector.html();
-            const requests = [];
-            selector.each(function(i, v){
-                const text = v.innerText.replace(/(?:\r\n|\r|\n|")/g, ' ');
+            const selectors = $('.Para');
+            const selectorToRequestMap = [];
+            selectors.each(function(index, selector){
+                const text = selector.innerText.replace(/(?:\r\n|\r|\n|")/g, ' ');
                 if(text){
                     let request = getEntities(text);
-                    requests.push({selector: v, request: request});
+                    selectorToRequestMap.push({selector: selector, request: request});
                 }
             });
 
-            requests.forEach(function(v){
-                const selector = v.selector;
-                const request = v.request;
-
-                console.log("selector: ", selector.innerText);
-                console.log("Request: ", request);
+            selectorToRequestMap.forEach(function(selectorToRequest){
+                const selector = selectorToRequest.selector;
+                const request = selectorToRequest.request;
 
                 request.then(function(respJson){
-                    innerHtml = replaceTextWithSementities(respJson, innerHtml);
-                    selector.innerHTML = innerHtml;
-
+                    selector.innerHTML = replaceTextWithSementities(respJson, selector.innerText);
                     createToolTips();
 
                 }, function(reason){
                     console.error("error in processing your request", reason);
                 });
             });
-
-
-
-
-
             break;
 
         case "scigraph":
