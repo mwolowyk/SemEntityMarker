@@ -46,6 +46,7 @@
 .unsilo-articles{
     border: solid #97bfd8 1px;
     padding: 10px;
+    margin: 10px;
     background-color: #97bfd840;
 }
 
@@ -56,9 +57,17 @@
 .sem-categories{
     border: solid #fbc225 1px;
     padding: 10px;
+    margin: 10px;
     background-color: #fbc22540;
 }
 
 .sem-category{
     overflow: hidden;
+}
+
+.scigraph{
+    border: solid #b3fb64 1px;
+    padding: 10px;
+    margin: 10px;
+    background-color: #b3fb6440;
 }

@@ -188,7 +188,7 @@ chrome.extension.onMessage.addListener(function(message, sender, sendResponse) {
                 console.log('resp: ', resp);
                 const articlePath = resp["@graph"].filter(function(el){return el["@id"].indexOf('articles:') === 0})[0]["@id"];
                 const articleId = `https://scigraph.springernature.com/things/${articlePath.replace(':', '/')}#connections`;
-                const sciGraphDiv = `<div><h3>Article Semantic Graph: </h3><a href="${articleId}">Link to the graph</a>`;
+                const sciGraphDiv = `<div class="scigraph"><h3>Article Semantic Graph: </h3><a href="${articleId}">Link to the graph</a></div>`;
                 $('.main-context').append(sciGraphDiv);
 
                 console.log('Graph url: ', articleId );
