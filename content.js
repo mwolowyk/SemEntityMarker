@@ -11,12 +11,15 @@ chrome.runtime.onMessage.addListener(
     }
 );
 
-function makeAjaxCall(url, methodType, data, headers){
+function makeAjaxCall(url, methodType, data, headers, datatype='application/json'){
     return $.ajax({
+        accepts: {
+            json: datatype
+        },
         url: url,
         method: methodType,
         data: data,
-        dataType: "json",
+        dataType: 'json',
         headers: headers
     });
 }
@@ -45,12 +48,10 @@ function getAbstractForEntity(entity){
 }
 
 function getEntitiesForSciGraph(doi){
-    const url = 'https://scigraph.springernature.com/api/redirect';
-    const data = {
-        doi : doi
-    };
-
-    return makeAjaxCall(url, 'GET', data);
+    const url = `https://scigraph.springernature.com/api/redirect?doi=${doi}`;
+    const data = {};
+    const headers = [{Accept: 'application/ld+json'}];
+    return makeAjaxCall(url, 'GET', data, headers, 'application/ld+json');
 };
 
 function getDimensionsToken(auth){
@@ -69,7 +70,7 @@ function getEntitiesForDimensions(doi){
 where type="article" and doi="${decodeURIComponent(doi)}"
 return publications [FOR+FOR_first]`;
     const headers =  {
-        'Authorization': "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJtb2R1bGVzIjpbIndvcmtmbG93IiwiY29kaW5nIiwiZHNsIl0sInN1YiI6ImRzbCt1c2VyMTVAZGltZW5zaW9ucy5haSIsImlhdCI6MTUyNDgzMTAwNywiZXhwIjoxNTI0ODM0NjA3fQ.wc4crMWR2DgWr2R8Kdvn8jUxJLJlhvFkSNWNOjTcSkn5kZuo6tgJocqm8zt8A6Fej6KR03vgU0CM01WboRJYsQ"
+        'Authorization': "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJtb2R1bGVzIjpbIndvcmtmbG93IiwiY29kaW5nIiwiZHNsIl0sInN1YiI6ImRzbCt1c2VyMTVAZGltZW5zaW9ucy5haSIsImlhdCI6MTUyNDgzNjExMiwiZXhwIjoxNTI0ODM5NzEyfQ.nD7hMPBcFjIoIob4BzWYTfojtkjAtfBEqZmMDiwGGOtXGnHP_rDb9fjmzyO9gjGgkQWfSfXBQwx4rwFfzctX7w"
     };
 
     return makeAjaxCall(url, 'POST', data, headers);
@@ -184,10 +185,15 @@ chrome.extension.onMessage.addListener(function(message, sender, sendResponse) {
             var doi = splittedPath[splittedPath.length-1];
             let entitiesForSciGraph = getEntitiesForSciGraph(decodeURIComponent(doi));
             entitiesForSciGraph.then(function(resp){
-                const grants = resp;
-                console.log('Grants: ', grants );
-            });
+                console.log('resp: ', resp);
+                const articlePath = resp["@graph"].filter(function(el){return el["@id"].indexOf('articles:') === 0})[0]["@id"];
+                const articleId = `https://scigraph.springernature.com/things/${articlePath.replace(':', '/')}#connections`;
+                const sciGraphDiv = `<div><h3>Article Semantic Graph: </h3><a href="${articleId}">Link to the graph</a>`;
+                $('.main-context').append(sciGraphDiv);
 
+                console.log('Graph url: ', articleId );
+            });
+            break;
 
 
         case "unsilo":
