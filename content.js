@@ -20,7 +20,7 @@ function makeAjaxCall(url, methodType, data, callback){
     });
 }
 
-function getEntities(text){
+function getEntities(text, v){
     const url = 'http://model.dbpedia-spotlight.org/en/annotate';
     const data = {
         confidence : 0.35,
@@ -68,34 +68,47 @@ function createToolTips(){
 };
 
 chrome.extension.onMessage.addListener(function(message, sender, sendResponse) {
-    console.log('Got message: ', message);
-    console.log('Got sender: ', sender);
-    console.log('Got sendResponse: ', sendResponse);
-
     switch(message.type) {
         case "colors-div":
             var selector = $('.Para');
             var innerHtml = selector.html();
+            const requests = [];
             selector.each(function(i, v){
                 const text = v.innerText.replace(/(?:\r\n|\r|\n|")/g, ' ');
                 if(text){
-                    getEntities(text).then(function(respJson){
-                        innerHtml = replaceTextWithSementities(respJson, innerHtml);
-                        selector.html(innerHtml);
-
-                        createToolTips();
-
-                    }, function(reason){
-                        console.error("error in processing your request", reason);
-                    });
+                    let request = getEntities(text);
+                    requests.push({selector: v, request: request});
                 }
             });
+
+            requests.forEach(function(v){
+                const selector = v.selector;
+                const request = v.request;
+
+                console.log("selector: ", selector.innerText);
+                console.log("Request: ", request);
+
+                request.then(function(respJson){
+                    innerHtml = replaceTextWithSementities(respJson, innerHtml);
+                    selector.innerHTML = innerHtml;
+
+                    createToolTips();
+
+                }, function(reason){
+                    console.error("error in processing your request", reason);
+                });
+            });
+
+
+
+
+
             break;
 
         case "scigraph":
             var splittedPath = location.pathname.split("/");
             var doi = splittedPath[splittedPath.length-1];
-            print(doi);
+            console.log("Scigraph: ",  doi);
             // getEntitiesForSciGraph(doi).then()
             break;
     }
