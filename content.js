@@ -52,27 +52,33 @@ function createToolTips(){
     $sementity.each(function(e, v){
         var txt3 = document.createElement("span");
         txt3.className = 'tooltiptext';
-        txt3.innerText = v.href.replace('http://dbpedia.org/resource/', ':');
+        txt3.innerText = v.href.replace('https://dbpedia.org/resource/', ':');
         v.append(txt3);
     });
 };
 
 chrome.extension.onMessage.addListener(function(message, sender, sendResponse) {
+    console.log('Got message: ', message);
+    console.log('Got sender: ', sender);
+    console.log('Got sendResponse: ', sendResponse);
+
     switch(message.type) {
         case "colors-div":
-            var selector = $('.richtext');
+            var selector = $('.Para');
             var innerHtml = selector.html();
             selector.each(function(i, v){
                 const text = v.innerText.replace(/(?:\r\n|\r|\n|")/g, ' ');
-                getEntities(text).then(function(respJson){
-                    innerHtml = replaceTextWithSementities(respJson, innerHtml);
-                    selector.html(innerHtml);
+                if(text){
+                    getEntities(text).then(function(respJson){
+                        innerHtml = replaceTextWithSementities(respJson, innerHtml);
+                        selector.html(innerHtml);
 
-                    createToolTips();
+                        createToolTips();
 
-                }, function(reason){
-                    console.error("error in processing your request", reason);
-                });
+                    }, function(reason){
+                        console.error("error in processing your request", reason);
+                    });
+                }
             });
             break;
     }

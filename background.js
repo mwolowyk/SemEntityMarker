@@ -29,6 +29,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 // listening for an event / one-time requests
 // coming from the popup
 chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
+    console.log('Called request: ', request);
     switch(request.type) {
         case "color-divs":
             colorDivs();
@@ -40,6 +41,7 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
 // listening for an event / long-lived connections
 // coming from devtools
 chrome.extension.onConnect.addListener(function (port) {
+
     port.onMessage.addListener(function (message) {
         switch(port.name) {
             case "color-divs-port":

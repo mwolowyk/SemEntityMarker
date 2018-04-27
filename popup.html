@@ -19,7 +19,7 @@
 
       #container {
         align-items: center;
-        display: flex;
+        display: block;
         justify-content: space-between;
       }
     </style>
@@ -36,7 +36,15 @@
   <body>
     <h1>Semantic Entity Marker</h1>
     <div id="container">
-      <button id="button">Mark</button>
+
+      Annotate
+      <label for="selector">
+        <input id="selector" placeholder="selector" type="text"/>
+      </label>
+      with:
+      <button id="button1">Dbpedia</button>
+      <button id="button2">SciGraph</button>
+      <button id="button3">Unsilo</button>
     </div>
   </body>
 </html>

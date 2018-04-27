@@ -1,9 +1,9 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
 
   "name": "Semantic Entity Matcher",
   "description": "This extension allows the user mark Semantic Entities on the current page.",
-  "version": "1.0",
+  "version": "1.1",
 
   "browser_action": {
     "default_icon": "semantic.png",
