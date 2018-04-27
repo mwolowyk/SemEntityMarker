@@ -91,27 +91,29 @@ function createToolTips(){
 };
 
 chrome.extension.onMessage.addListener(function(message, sender, sendResponse) {
-    console.log('Got message: ', message);
-    console.log('Got sender: ', sender);
-    console.log('Got sendResponse: ', sendResponse);
-
     switch(message.type) {
         case "colors-div":
-            var selector = $('.Para');
-            var innerHtml = selector.html();
-            selector.each(function(i, v){
-                const text = v.innerText.replace(/(?:\r\n|\r|\n|")/g, ' ');
+            const selectors = $('.Para');
+            const selectorToRequestMap = [];
+            selectors.each(function(index, selector){
+                const text = selector.innerText.replace(/(?:\r\n|\r|\n|")/g, ' ');
                 if(text){
-                    getEntities(text).then(function(respJson){
-                        innerHtml = replaceTextWithSementities(respJson, innerHtml);
-                        selector.html(innerHtml);
-
-                        createToolTips();
-
-                    }, function(reason){
-                        console.error("error in processing your request", reason);
-                    });
+                    let request = getEntities(text);
+                    selectorToRequestMap.push({selector: selector, request: request});
                 }
+            });
+
+            selectorToRequestMap.forEach(function(selectorToRequest){
+                const selector = selectorToRequest.selector;
+                const request = selectorToRequest.request;
+
+                request.then(function(respJson){
+                    selector.innerHTML = replaceTextWithSementities(respJson, selector.innerText);
+                    createToolTips();
+
+                }, function(reason){
+                    console.error("error in processing your request", reason);
+                });
             });
             break;
 
