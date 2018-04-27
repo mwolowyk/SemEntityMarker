@@ -64,11 +64,13 @@ function getDimensionsToken(auth){
 };
 
 function getEntitiesForDimensions(doi){
-    const url = 'https://app.dimensions.ai/api/auth.json';
-    const data = {};
+    const url = 'https://app.dimensions.ai/api/dsl.json';
+    const data = `search publications 
+where type="article" and doi="${decodeURIComponent(doi)}"
+return publications [FOR+FOR_first]`;
     const headers =  {
-        'Authorization': "JWT " + resp.json()[' "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJtb2R1bGVzIjpbIndvcmtmbG93IiwiY29kaW5nIiwiZHNsIl0sInN1YiI6ImRzbCt1c2VyMTVAZGltZW5zaW9ucy5haSIsImlhdCI6MTUyNDgyNjczMCwiZXhwIjoxNTI0ODMwMzMwfQ.wKEkbRjKC_4B7ky0rJ0e0-NTh9uONjwhbBXr5RXiJttvtXWiV_ID_lt7wjzWx_IUOTZil_GLnbet5MvboUhbiw"']
-    }
+        'Authorization': "JWT eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJtb2R1bGVzIjpbIndvcmtmbG93IiwiY29kaW5nIiwiZHNsIl0sInN1YiI6ImRzbCt1c2VyMTVAZGltZW5zaW9ucy5haSIsImlhdCI6MTUyNDgzMTAwNywiZXhwIjoxNTI0ODM0NjA3fQ.wc4crMWR2DgWr2R8Kdvn8jUxJLJlhvFkSNWNOjTcSkn5kZuo6tgJocqm8zt8A6Fej6KR03vgU0CM01WboRJYsQ"
+    };
 
     return makeAjaxCall(url, 'POST', data, headers);
 };
@@ -104,6 +106,25 @@ function addSearchLink(respJson, innerHtml) {
     innerHtml = innerHtml.replace("Article", res);
     console.log('Inner: ', innerHtml);
     return innerHtml;
+}
+
+function getCategories(resp){
+    const categories = [];
+    resp.publications.forEach(function(el){
+       el.FOR.forEach(function(el2){
+           categories.push(el2.name);
+       });
+
+        el.FOR_first.forEach(function(el3){
+            categories.push(el3.name);
+        });
+    });
+    let categoriesDiv = '<div class="sem-categories"><h3>Found categories: </h3>';
+    categories.forEach(function(cat){
+        categoriesDiv += `<div class="sem-category">${cat}</div>`
+    });
+    categoriesDiv += '</div>';
+    return categoriesDiv;
 }
 
 function createToolTips(){
@@ -151,8 +172,23 @@ chrome.extension.onMessage.addListener(function(message, sender, sendResponse) {
         case "dimensions":
             var splittedPath = location.pathname.split("/");
             var doi = splittedPath[splittedPath.length-1];
-            getEntitiesForDimensions(doi).then()
+
+            getEntitiesForDimensions(doi).then(function(resp){
+                const categoriesDiv = getCategories(resp);
+                $('.main-context').append(categoriesDiv);
+            });
             break;
+
+        case "scigraf":
+            var splittedPath = location.pathname.split("/");
+            var doi = splittedPath[splittedPath.length-1];
+            let entitiesForSciGraph = getEntitiesForSciGraph(decodeURIComponent(doi));
+            entitiesForSciGraph.then(function(resp){
+                const grants = resp;
+                console.log('Grants: ', grants );
+            });
+
+
 
         case "unsilo":
             var splittedPath = location.pathname.split("/");

@@ -4,19 +4,26 @@ window.onload = function() {
         chrome.extension.sendMessage({
             type: "color-divs"
         });
-    }
+    };
 
     document.getElementById("button2").onclick = function() {
         console.log('Clicked Dimensions');
         chrome.extension.sendMessage({
             type: "dimensions"
         });
-    }
+    };
 
     document.getElementById("button3").onclick = function() {
         console.log('Clicked Unsilo');
         chrome.extension.sendMessage({
             type: "unsilo"
+        });
+    };
+
+    document.getElementById("button4").onclick = function() {
+        console.log('Clicked SciGraph');
+        chrome.extension.sendMessage({
+            type: "scigraf"
         });
     }
 

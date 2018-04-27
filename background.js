@@ -34,11 +34,14 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
         case "color-divs":
             colorDivs();
             break;
-        case "scigraph":
-            sciGraph();
+        case "dimensions":
+            dimensions();
             break;
         case "unsilo":
             unsilo();
+            break;
+        case "scigraf":
+            sciGraph();
             break;
     }
     return true;
@@ -67,9 +70,17 @@ var colorDivs = function() {
 }
 
 // send a message to the content script
+var dimensions = function() {
+    chrome.tabs.getSelected(null, function(tab){
+        chrome.tabs.sendMessage(tab.id, {type: "dimensions", color: "#f9ffbf"});
+        // setting a badge
+        chrome.browserAction.setBadgeText({text: "marked!"});
+    });
+}
+
 var sciGraph = function() {
     chrome.tabs.getSelected(null, function(tab){
-        chrome.tabs.sendMessage(tab.id, {type: "scigraph", color: "#f9ffbf"});
+        chrome.tabs.sendMessage(tab.id, {type: "scigraf", color: "#f9ffbf"});
         // setting a badge
         chrome.browserAction.setBadgeText({text: "marked!"});
     });
