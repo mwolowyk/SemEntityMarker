@@ -37,6 +37,9 @@ chrome.extension.onMessage.addListener(function(request, sender, sendResponse) {
         case "scigraph":
             sciGraph();
             break;
+        case "unsilo":
+            unsilo();
+            break;
     }
     return true;
 });
@@ -67,6 +70,15 @@ var colorDivs = function() {
 var sciGraph = function() {
     chrome.tabs.getSelected(null, function(tab){
         chrome.tabs.sendMessage(tab.id, {type: "scigraph", color: "#f9ffbf"});
+        // setting a badge
+        chrome.browserAction.setBadgeText({text: "marked!"});
+    });
+}
+
+// send a message to the content script
+var unsilo = function() {
+    chrome.tabs.getSelected(null, function(tab){
+        chrome.tabs.sendMessage(tab.id, {type: "unsilo", color: "#f9ffbf"});
         // setting a badge
         chrome.browserAction.setBadgeText({text: "marked!"});
     });

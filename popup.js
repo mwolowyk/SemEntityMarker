@@ -13,4 +13,11 @@ window.onload = function() {
         });
     }
 
+    document.getElementById("button3").onclick = function() {
+        console.log('Clicked Unsilo');
+        chrome.extension.sendMessage({
+            type: "unsilo"
+        });
+    }
+
 }

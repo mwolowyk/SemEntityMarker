@@ -42,3 +42,13 @@
     visibility: visible;
     opacity: 1;
 }
+
+.unsilo-articles{
+    border: solid #97bfd8 1px;
+    padding: 10px;
+    background-color: #97bfd840;
+}
+
+.unsilo-article{
+    overflow: hidden;
+}

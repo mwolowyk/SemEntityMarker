@@ -31,11 +31,18 @@ function getEntities(text){
    return makeAjaxCall(url, 'GET', data);
 };
 
+function getEntitiesForUnsilo(doi){
+    const url = 'https://api.unsilo.com/springer/related-content/2.7/document/v4/by-id/'.concat(doi);
+    const data = {
+    };
+
+    return makeAjaxCall(url, 'GET', data);
+};
+
 function getAbstractForEntity(entity){
     const url = `http://dbpedia.org/sparql/?default-graph-uri=http%3A%2F%2Fdbpedia.org&query=prefix+dbpedia%3A+%3Chttp%3A%2F%2Fdbpedia.org%2Fresource%2F%3E%0D%0Aprefix+dbpedia-owl%3A+%3Chttp%3A%2F%2Fdbpedia.org%2Fontology%2F%3E%0D%0Aselect+%3Fabstract+where+%7B+++%0D%0Adbpedia%3A${entity}+dbpedia-owl%3Aabstract+%3Fabstract+.%0D%0Afilter%28langMatches%28lang%28%3Fabstract%29%2C%22en%22%29%29%7D&format=application%2Fsparql-results%2Bjson&CXML_redir_for_subjs=121&CXML_redir_for_hrefs=&timeout=30000&debug=on&run=+Run+Query+`;
     return makeAjaxCall(url, 'GET');
 }
-
 
 function getEntitiesForSciGraph(doi){
     const url = 'https://scigraph.springernature.com/api/redirect';
@@ -85,6 +92,20 @@ function replaceTextWithSementities(respJson, innerHtml) {
     return innerHtml;
 }
 
+function addSearchLink(respJson, innerHtml) {
+    const docs = respJson.documents.slice(1, 4);
+    var res = '<div class="unsilo-articles"><h3>Related articles: </h3>'
+    docs.forEach( function (d) {
+        const docTitle = d.title
+        const docDoi = d.id
+        res = res + '<div class="unsilo-article"><a href="https://link.springer.com/' + docDoi + '">' + docTitle + '</a></div><br/>'
+    });
+    res+= '</div>';
+    innerHtml = innerHtml.replace("Article", res);
+    console.log('Inner: ', innerHtml);
+    return innerHtml;
+}
+
 function createToolTips(){
     var $sementity = $('.sementity');
     $sementity.each(function(e, v){
@@ -131,6 +152,20 @@ chrome.extension.onMessage.addListener(function(message, sender, sendResponse) {
             var splittedPath = location.pathname.split("/");
             var doi = splittedPath[splittedPath.length-1];
             getEntitiesForDimensions(doi).then()
+            break;
+
+        case "unsilo":
+            var splittedPath = location.pathname.split("/");
+            var doi = splittedPath[splittedPath.length-1];
+
+            var selector = $('.main-context__container');
+            var innerHtml = selector.html();
+
+            var ents = getEntitiesForUnsilo(doi);
+            ents.then(function(respJson) {
+                innerHtml = addSearchLink(respJson, innerHtml);
+                selector.html(innerHtml);
+            })
             break;
     }
 });
