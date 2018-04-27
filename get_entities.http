@@ -13,8 +13,9 @@ Accept: application/ld+json
 GET https://api.unsilo.com/springer/related-content/2.7/document/v4/by-id/{{doi}}
 
 ### Dimensions DSL
-POST https://app.dimensions.ai/api/auth.json HTTP/1.1
+POST https://app.dimensions.ai/api/auth.json
 Content-Type: application/json
-< ./dimensions-login.json
+data: {"username": "dsl+user15@dimensions.ai","password": "DimensionsAPIuser15"}
+
 
 ###

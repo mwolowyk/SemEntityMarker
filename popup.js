@@ -7,9 +7,9 @@ window.onload = function() {
     }
 
     document.getElementById("button2").onclick = function() {
-        console.log('Clicked SciGraph');
+        console.log('Clicked Dimensions');
         chrome.extension.sendMessage({
-            type: "scigraph"
+            type: "dimensions"
         });
     }
 

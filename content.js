@@ -11,12 +11,13 @@ chrome.runtime.onMessage.addListener(
     }
 );
 
-function makeAjaxCall(url, methodType, data, callback){
+function makeAjaxCall(url, methodType, data, headers){
     return $.ajax({
         url: url,
         method: methodType,
         data: data,
-        dataType: "json"
+        dataType: "json",
+        headers: headers
     });
 }
 
@@ -39,6 +40,28 @@ function getEntitiesForSciGraph(doi){
 
     return makeAjaxCall(url, 'GET', data);
 };
+
+function getDimensionsToken(auth){
+    const url = 'https://app.dimensions.ai/api/auth.json';
+    const data = {
+        "username": "dsl+user15@dimensions.ai",
+        "password": "DimensionsAPIuser15"
+    };
+
+    return makeAjaxCall(url, 'POST', data);
+};
+
+function getEntitiesForDimensions(doi){
+    const url = 'https://app.dimensions.ai/api/auth.json';
+    const data = {};
+    const headers =  {
+        'Authorization': "JWT " + resp.json()[' "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJtb2R1bGVzIjpbIndvcmtmbG93IiwiY29kaW5nIiwiZHNsIl0sInN1YiI6ImRzbCt1c2VyMTVAZGltZW5zaW9ucy5haSIsImlhdCI6MTUyNDgyNjczMCwiZXhwIjoxNTI0ODMwMzMwfQ.wKEkbRjKC_4B7ky0rJ0e0-NTh9uONjwhbBXr5RXiJttvtXWiV_ID_lt7wjzWx_IUOTZil_GLnbet5MvboUhbiw"']
+    }
+
+    return makeAjaxCall(url, 'POST', data, headers);
+};
+
+
 
 function replaceTextWithSementities(respJson, innerHtml) {
     const resourses = respJson.Resources;
@@ -92,11 +115,10 @@ chrome.extension.onMessage.addListener(function(message, sender, sendResponse) {
             });
             break;
 
-        case "scigraph":
+        case "dimensions":
             var splittedPath = location.pathname.split("/");
             var doi = splittedPath[splittedPath.length-1];
-            print(doi);
-            // getEntitiesForSciGraph(doi).then()
+            getEntitiesForDimensions(doi).then()
             break;
     }
 });
